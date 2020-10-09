@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace JwtAuth.Api.Controllers
 {
@@ -89,7 +91,21 @@ namespace JwtAuth.Api.Controllers
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
+            //return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
+
+            var claims = identityClaims.Claims
+                .Select(x => new
+                {
+                    Type = x.Type.ToString(),
+                    Value = x.Value
+                })
+                .ToList();
+
+            var response = new Dictionary<string, object>();
+            response.Add("Token", tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor)));
+            response.Add("Claims", claims);
+            var json = JsonConvert.SerializeObject(response);
+            return json;
         }
     }
 }
