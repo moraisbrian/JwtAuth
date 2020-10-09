@@ -23,7 +23,8 @@ namespace JwtAuth.Api.Controllers
             _dbContext = dbContext;
         }
 
-        [ClaimsAuthorize("Produto", "Adicionar")]
+        [Authorize(Policy = "ProdutoAdicionar")]
+        //[ClaimsAuthorize("Produto", "Adicionar")]
         [HttpPost]
         [Route("Cadastrar")]
         public async Task<ActionResult> Cadastrar(Produto produto)
@@ -48,7 +49,8 @@ namespace JwtAuth.Api.Controllers
             return await _dbContext.Produtos.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        [ClaimsAuthorize("Produto", "Deletar")]
+        [Authorize(Policy = "ProdutoDeletar")]
+        //[ClaimsAuthorize("Produto", "Deletar")]
         [HttpDelete]
         [Route("Deletar/{id}")]
         public async Task<ActionResult> Deletar(int id)
@@ -65,7 +67,8 @@ namespace JwtAuth.Api.Controllers
             return BadRequest();
         }
 
-        [ClaimsAuthorize("Produto", "Editar")]
+        [Authorize(Policy = "ProdutoEditar")]
+        //[ClaimsAuthorize("Produto", "Editar")]
         [HttpPut]
         [Route("Atualizar/{id}")]
         public async Task<ActionResult> Atualizar(int id, Produto produto)

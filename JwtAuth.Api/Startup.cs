@@ -41,6 +41,18 @@ namespace JwtAuth.Api
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAuthorization(options => 
+            {
+                options.AddPolicy("ProdutoEditar", policy => 
+                    policy.RequireClaim("Produto", "Editar"));
+
+                options.AddPolicy("ProdutoAdicionar", policy => 
+                    policy.RequireClaim("Produto", "Adicionar"));
+
+                options.AddPolicy("ProdutoDeletar", policy => 
+                    policy.RequireClaim("Produto", "Deletar"));
+            });
+
             // JWT
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -48,16 +60,16 @@ namespace JwtAuth.Api
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
-            services.AddAuthentication(x => 
+            services.AddAuthentication(options => 
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x => 
+            .AddJwtBearer(options => 
             {
-                x.RequireHttpsMetadata = true;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
